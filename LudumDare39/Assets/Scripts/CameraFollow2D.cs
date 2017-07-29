@@ -49,9 +49,6 @@ public class CameraFollow2D : MonoBehaviour {
             newPos.y = oldPos.y;
         }
         transform.position = newPos;
-
-        bottomLeft = cam.ViewportToWorldPoint(new Vector3(0, 0, cam.nearClipPlane));
-        topLeft = cam.ViewportToWorldPoint(new Vector3(1, 1, cam.nearClipPlane));
     }
 
     void UpdateArrow()
@@ -63,6 +60,10 @@ public class CameraFollow2D : MonoBehaviour {
         bool withinViewY = false;
 
         arrow.gameObject.SetActive(true);
+
+
+        bottomLeft = cam.ViewportToWorldPoint(new Vector3(0, 0, cam.nearClipPlane));
+        topLeft = cam.ViewportToWorldPoint(new Vector3(1, 1, cam.nearClipPlane));
 
         if (batteryPosition.x < bottomLeft.x + arrowWidth / 2)
         {
