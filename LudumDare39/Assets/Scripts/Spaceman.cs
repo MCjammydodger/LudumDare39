@@ -4,10 +4,10 @@ public class Spaceman : MonoBehaviour {
 
     public float jetpackFuel { get; private set; }
 
-    private int numberOfBatteries = 0;
-
     private float jetpackBurnRate = 30;
     private float jetpackRecoveryRate = 30;
+
+    private bool atBase = false;
 
     private Block currentBlock;
 
@@ -50,16 +50,32 @@ public class Spaceman : MonoBehaviour {
             ModifyFuel(jetpackRecoveryRate * Time.deltaTime);
         }
         hud.SetFuelGauge(jetpackFuel/100);
+
+        if (atBase && Input.GetKeyUp(KeyCode.E))
+        {
+            gameManager.GoInside();
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if(other.tag == "Battery")
         {
-            numberOfBatteries++;
-            gameManager.AddPower(10);
+            gameManager.AddBattery();
             Destroy(other.gameObject);
             world.SpawnBattery();
+        }
+        if(other.tag == "Base" )
+        {
+            atBase = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.tag == "Base")
+        {
+            atBase = false;
         }
     }
 

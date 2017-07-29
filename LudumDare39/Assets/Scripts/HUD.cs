@@ -7,6 +7,8 @@ public class HUD : MonoBehaviour {
     private Slider powerGuage;
     [SerializeField]
     private Slider fuelGuage;
+    [SerializeField]
+    private Text batteryText;
 
     public void SetPowerGauge(float gaugeAmount)
     {
@@ -16,5 +18,10 @@ public class HUD : MonoBehaviour {
     public void SetFuelGauge(float gaugeAmount)
     {
         fuelGuage.value = gaugeAmount;
+    }
+
+    public void SetBatteryText(int numberOfBatteries)
+    {
+        batteryText.text = numberOfBatteries.ToString();
     }
 }

@@ -16,6 +16,12 @@ public class World : MonoBehaviour {
     [SerializeField]
     private Block[] blockPrefabs;
 
+    [SerializeField]
+    private GameObject baseObject;
+
+    [SerializeField]
+    private Transform spacemanStart;
+
     private float batteryWidth;
     private float batteryHeight;
 
@@ -25,13 +31,21 @@ public class World : MonoBehaviour {
     private int maxNumberOfBlocks = 10;
     private int numberOfBlocks;
 
-    void Start()
+    private Spaceman spaceman;
+
+    void Awake()
     {
         batteryWidth = batteryPrefab.GetComponent<SpriteRenderer>().bounds.size.x;
         batteryHeight = batteryPrefab.GetComponent<SpriteRenderer>().bounds.size.y;
+        baseObject.transform.position = new Vector3(maxX, baseObject.transform.position.y);
+        spaceman = FindObjectOfType<Spaceman>();
         SpawnBattery();
     }
 
+    private void OnEnable()
+    {
+        spaceman.transform.position = spacemanStart.position;
+    }
     void Update()
     {
         timeSinceBlockSpawn += Time.deltaTime;
