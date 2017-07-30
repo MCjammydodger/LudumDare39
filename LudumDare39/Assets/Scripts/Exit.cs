@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class Exit : Interactable {
+public class Exit : MonoBehaviour, Interactable {
     private GameManager gameManager;
 
     private void Start()
@@ -9,8 +9,13 @@ public class Exit : Interactable {
         gameManager = FindObjectOfType<GameManager>();  
     }
 
-    public override void Interact()
+    public void Interact()
     {
         gameManager.GoOutside();    
+    }
+
+    public string GetButtonPromptMessage()
+    {
+        return "Press [E] to exit base";
     }
 }

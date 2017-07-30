@@ -10,8 +10,14 @@ public class CameraFollow2D : MonoBehaviour {
     private float arrowWidth;
     private float arrowHeight;
 
-    Vector3 bottomLeft;
-    Vector3 topLeft;
+    private Transform target;
+
+    private Vector3 bottomLeft;
+    private Vector3 topLeft;
+
+    [SerializeField]
+    private Rocket rocket;
+
     // Use this for initialization
     void Start () {
         world = FindObjectOfType<World>();
@@ -20,12 +26,12 @@ public class CameraFollow2D : MonoBehaviour {
         arrow = transform.GetChild(0);
         arrowWidth = arrow.GetComponent<SpriteRenderer>().size.x;
         arrowHeight = arrow.GetComponent<SpriteRenderer>().size.y;
-
+        target = spaceman.transform;
     }
 
     // Update is called once per frame
     void Update () {
-        FollowTarget(spaceman.transform.position);
+        FollowTarget(target.position);
         UpdateArrow();
 	}
 
@@ -53,7 +59,18 @@ public class CameraFollow2D : MonoBehaviour {
 
     void UpdateArrow()
     {
-        Vector3 batteryPosition = world.battery.transform.position;
+        Vector3 targetPosition = world.battery.transform.position;
+
+        if (rocket.isActiveAndEnabled)
+        {
+            targetPosition = rocket.transform.position;
+            arrow.GetComponent<SpriteRenderer>().color = Color.white;
+            if (rocket.IsEntered())
+            {
+                arrow.gameObject.SetActive(false);
+                return;
+            }
+        }
         Vector3 newArrowPos = arrow.position;
 
         bool withinViewX = false;
@@ -65,29 +82,29 @@ public class CameraFollow2D : MonoBehaviour {
         bottomLeft = cam.ViewportToWorldPoint(new Vector3(0, 0, cam.nearClipPlane));
         topLeft = cam.ViewportToWorldPoint(new Vector3(1, 1, cam.nearClipPlane));
 
-        if (batteryPosition.x < bottomLeft.x + arrowWidth / 2)
+        if (targetPosition.x < bottomLeft.x)
         {
             newArrowPos.x = bottomLeft.x + arrowWidth/2;
-        }else if(batteryPosition.x > topLeft.x - arrowWidth / 2)
+        }else if(targetPosition.x > topLeft.x)
         {
             newArrowPos.x = topLeft.x - arrowWidth/2;
         }
         else
         {
-            newArrowPos.x = batteryPosition.x;
+            newArrowPos.x = targetPosition.x;
             withinViewX = true;
         }
 
-        if(batteryPosition.y < bottomLeft.y + arrowHeight / 2)
+        if(targetPosition.y < bottomLeft.y)
         {
             newArrowPos.y = bottomLeft.y + arrowHeight / 2;
-        }else if(batteryPosition.y > topLeft.y - arrowHeight / 2)
+        }else if(targetPosition.y > topLeft.y)
         {
             newArrowPos.y = topLeft.y - arrowHeight / 2;
         }
         else
         {
-            newArrowPos.y = batteryPosition.y;
+            newArrowPos.y = targetPosition.y;
             withinViewY = true;
         }
 
@@ -97,10 +114,15 @@ public class CameraFollow2D : MonoBehaviour {
         }
         else
         {
-            Vector3 dir = batteryPosition - arrow.position;
+            Vector3 dir = targetPosition - arrow.position;
             float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
             arrow.rotation = Quaternion.AngleAxis(angle-90, Vector3.forward);
         }
         arrow.position = newArrowPos;
+    }
+
+    public void SetTarget(Transform newTarget)
+    {
+        target = newTarget;
     }
 }

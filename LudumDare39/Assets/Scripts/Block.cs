@@ -7,9 +7,12 @@ public class Block : MonoBehaviour {
 
     private Rigidbody2D rigidBody;
 
+    private World world;
+
     void Start()
     {
         rigidBody = GetComponent<Rigidbody2D>();
+        world = FindObjectOfType<World>();
     }
 
     private void Update()
@@ -20,6 +23,10 @@ public class Block : MonoBehaviour {
         }
     }
 
+    private void OnDestroy()
+    {
+        world.BlockDestroyed();
+    }
     public void PickUp(bool pickedUp)
     {
         GetComponent<BoxCollider2D>().isTrigger = pickedUp;

@@ -10,11 +10,13 @@ public class FirstPersonTrigger : MonoBehaviour {
     {
         gameManager = FindObjectOfType<GameManager>();
     }
-
+    private void OnEnable()
+    {
+        objectsInTrigger = new List<Interactable>();
+    }
     private void OnTriggerEnter(Collider other)
     {
         Interactable interactable = other.GetComponent<Interactable>();
-        Debug.Log(other.name + "    " + interactable);
         if(interactable != null && !objectsInTrigger.Contains(interactable))
         {
             objectsInTrigger.Add(interactable);

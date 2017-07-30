@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class Generator : Interactable {
+public class Generator : MonoBehaviour, Interactable {
 
     private Animator animator;
     private GameManager gameManager;
@@ -11,13 +11,26 @@ public class Generator : Interactable {
         animator = GetComponent<Animator>();
         gameManager = FindObjectOfType<GameManager>();
     }
-    public override void Interact()
+    public void Interact()
     {
         if (gameManager.numberOfBatteries > 0)
         {
             gameManager.RemoveBattery();
             gameManager.AddPower(10);
+            gameManager.AddScore(200);
             animator.SetTrigger("Open");
         }
     }
+    public string GetButtonPromptMessage()
+    {
+        if (gameManager.numberOfBatteries > 0)
+        {
+            return "Press [E] to place battery in the generator";
+        }
+        else
+        {
+            return "You have no batteries to place";
+        }
+    }
+
 }

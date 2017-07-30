@@ -7,6 +7,8 @@ public class Inside : MonoBehaviour {
 
     public void PowerChanged(float power)
     {
+        if (poweredItems.Length == 0)
+            return;
         int interval = 90 / poweredItems.Length;
         for(int i = 0; i < poweredItems.Length; i++)
         {

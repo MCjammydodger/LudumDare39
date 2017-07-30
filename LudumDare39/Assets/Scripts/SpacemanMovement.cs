@@ -19,6 +19,7 @@ public class SpacemanMovement : MonoBehaviour {
     private World world;
     private SpacemanTrigger trigger;
     private Spaceman spaceman;
+    private SpacemanForcefield spacemanForcefield;
 
 	// Use this for initialization
 	void Start () {
@@ -27,12 +28,17 @@ public class SpacemanMovement : MonoBehaviour {
         world = FindObjectOfType<World>();
         trigger = GetComponentInChildren<SpacemanTrigger>();
         spaceman = GetComponent<Spaceman>();
+        spacemanForcefield = GetComponent<SpacemanForcefield>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
         Vector3 movementVector = new Vector3(GetHorizontal(), GetVertical(), 0);
         rigidBody.velocity = movementVector;
+        if (spacemanForcefield.enabled && Input.GetKeyUp(KeyCode.Q))
+        {
+            spacemanForcefield.UseForcefield();
+        }
 	}
     
     float GetHorizontal()

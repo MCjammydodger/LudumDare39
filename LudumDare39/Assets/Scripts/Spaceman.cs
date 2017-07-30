@@ -8,6 +8,7 @@ public class Spaceman : MonoBehaviour {
     private float jetpackRecoveryRate = 30;
 
     private bool atBase = false;
+    private bool atRocket = false;
 
     private Block currentBlock;
 
@@ -17,6 +18,8 @@ public class Spaceman : MonoBehaviour {
     private SpacemanMovement movement;
     private HUD hud;
 
+    private Rocket rocket;
+
     // Use this for initialization
     void Start () {
         world = FindObjectOfType<World>();
@@ -24,12 +27,30 @@ public class Spaceman : MonoBehaviour {
         trigger = GetComponentInChildren<SpacemanTrigger>();
         movement = GetComponent<SpacemanMovement>();
         hud = FindObjectOfType<HUD>();
-        jetpackFuel = 100;
+        jetpackFuel = gameManager.maxFuel;
 	}
 
     void Update()
     {
-        if (Input.GetButtonUp("Submit"))
+        string dropBlockMessage = "Press [E] to drop block";
+        string pickUpBlockMessage = "Press [E] to pick up block";
+
+        if (currentBlock != null)
+        {
+            gameManager.ShowButtonPrompt(dropBlockMessage);
+        }
+        else if(currentBlock == null && trigger.GetLatestBlock() != null)
+        {
+            gameManager.ShowButtonPrompt(pickUpBlockMessage);
+        }
+        else
+        {
+            if(gameManager.IsButtonPrompt(dropBlockMessage) || gameManager.IsButtonPrompt(pickUpBlockMessage))
+            {
+                gameManager.CloseButtonPrompt();
+            }
+        }
+        if (Input.GetKeyUp(KeyCode.E))
         {
             if(currentBlock != null)
             {
@@ -49,11 +70,45 @@ public class Spaceman : MonoBehaviour {
         {
             ModifyFuel(jetpackRecoveryRate * Time.deltaTime);
         }
-        hud.SetFuelGauge(jetpackFuel/100);
+        hud.SetFuelGauge(jetpackFuel/gameManager.maxFuel);
 
-        if (atBase && Input.GetKeyUp(KeyCode.E))
+        string enterBaseMessage = "Press [E] to enter base";
+        if (atBase)
         {
-            gameManager.GoInside();
+            gameManager.ShowButtonPrompt(enterBaseMessage);
+            if (Input.GetKeyUp(KeyCode.E))
+            {
+                gameManager.GoInside();
+            }
+        }
+        else
+        {
+            if (gameManager.IsButtonPrompt(enterBaseMessage))
+            {
+                gameManager.CloseButtonPrompt();
+            }
+        }
+
+        string rocketMessage = "Press [E] to enter rocket and take off";
+        if (atRocket)
+        {
+            gameManager.ShowButtonPrompt(rocketMessage);
+            if (Input.GetKeyUp(KeyCode.E))
+            {
+                rocket.EnterRocket(this);
+            }
+        }
+        else
+        {
+            if (gameManager.IsButtonPrompt(rocketMessage))
+            {
+                gameManager.CloseButtonPrompt();
+            }
+        }
+
+        if (!GetComponent<SpacemanForcefield>().enabled)
+        {
+            GetComponent<SpacemanForcefield>().enabled = gameManager.unlockedForcefield;
         }
     }
 
@@ -62,12 +117,16 @@ public class Spaceman : MonoBehaviour {
         if(other.tag == "Battery")
         {
             gameManager.AddBattery();
-            Destroy(other.gameObject);
             world.SpawnBattery();
         }
         if(other.tag == "Base" )
         {
             atBase = true;
+        }
+        if(other.GetComponent<Rocket>() != null)
+        {
+            atRocket = true;
+            rocket = other.GetComponent<Rocket>();
         }
     }
 
@@ -76,6 +135,10 @@ public class Spaceman : MonoBehaviour {
         if (other.tag == "Base")
         {
             atBase = false;
+        }
+        if (other.GetComponent<Rocket>())
+        {
+            atRocket = false;
         }
     }
 
@@ -100,7 +163,7 @@ public class Spaceman : MonoBehaviour {
 
     private void ModifyFuel(float amount)
     {
-        jetpackFuel = Mathf.Min(jetpackFuel + amount, 100);
+        jetpackFuel = Mathf.Min(jetpackFuel + amount, gameManager.maxFuel);
         jetpackFuel = Mathf.Max(jetpackFuel + amount, 0);
     }
 }

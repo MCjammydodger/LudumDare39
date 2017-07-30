@@ -7,6 +7,7 @@ public class FirstPersonController : MonoBehaviour {
     private CharacterController characterController;
     private Camera firstPersonCamera;
     private FirstPersonTrigger trigger;
+    private GameManager gameManager;
 
     private float moveSpeed = 1000;
     private float rotateSpeed = 200;
@@ -16,6 +17,7 @@ public class FirstPersonController : MonoBehaviour {
         characterController = GetComponent<CharacterController>();
         firstPersonCamera = GetComponentInChildren<Camera>();
         trigger = GetComponentInChildren<FirstPersonTrigger>();
+        gameManager = FindObjectOfType<GameManager>();
 	}
 
     private void OnEnable()
@@ -34,11 +36,15 @@ public class FirstPersonController : MonoBehaviour {
         Interactable interactable = trigger.GetLatestInteractable();
         if(interactable != null)
         {
-            Debug.Log("Not null");
+            gameManager.ShowButtonPrompt(interactable.GetButtonPromptMessage());
             if (Input.GetKeyUp(KeyCode.E))
             {
                 interactable.Interact();
             }
+        }
+        else
+        {
+            gameManager.CloseButtonPrompt();
         }
     }
     void Movement()
